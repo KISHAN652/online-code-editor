@@ -1,157 +1,129 @@
-# CodePlayground - Online Code Editor
+# CodePlayground - Premium Online IDE Playground (v2.0)
 
-A modern, lightweight, and fully responsive online code editor for HTML, CSS, and JavaScript with live preview capabilities.
+A state-of-the-art, feature-rich, and 100% offline-first web development playground for HTML, CSS, JavaScript, and Markdown. Built completely with vanilla web technologies, CodePlayground offers an ultra-premium visual IDE experience with an integrated sandboxed console, dynamic CSS generators, auto-formatting, serverless sharing, and Progressive Web App (PWA) installation capabilities.
 
-![CodePlayground](https://img.shields.io/badge/version-1.0.0-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-
-## 📖 About The Project
-
-CodePlayground is a production-ready web-based code editor that allows you to write HTML, CSS, and JavaScript and see the results in real-time. Built with vanilla JavaScript and no external dependencies, it provides a clean, modern interface for quick prototyping, learning, and experimentation.
-
-The application features a premium dark/light theme system, automatic code saving, and a fully responsive design that works seamlessly across all devices - from mobile phones to ultra-wide monitors.
-
-## ✨ Features
-
-### Core Functionality
-- **Three Editor Panels** - Separate editors for HTML, CSS, and JavaScript
-- **Live Preview** - Real-time rendering in a sandboxed iframe
-- **Auto-Update** - Debounced live updates (500ms) as you type
-- **Line Numbers** - Custom lightweight line number implementation with scroll sync
-- **Code Persistence** - Automatic saving to localStorage
-- **Auto-Restore** - Restores your code on page reload
-
-### User Experience
-- **Dark/Light Theme** - Smooth animated theme toggle with persistence
-- **Collapsible Panels** - Expand/collapse editor panels for better focus
-- **Keyboard Shortcuts**:
-  - `Ctrl+Enter` / `Cmd+Enter` - Run code
-  - `Ctrl+S` / `Cmd+S` - Save code
-  - `Tab` - Insert 2 spaces
-- **Toast Notifications** - Non-intrusive feedback messages
-- **Error Handling** - JavaScript errors displayed in preview
-
-### Design
-- **Modern UI** - Glassmorphism effects with soft shadows
-- **Premium Typography** - Inter for UI, JetBrains Mono for code
-- **Smooth Animations** - CSS-based transitions and micro-interactions
-- **Responsive Layout** - Optimized for mobile, tablet, and desktop
-
-### Responsive Breakpoints
-- **Mobile (<768px)** - Vertical stack layout with collapsible panels
-- **Tablet (768-1024px)** - Grid layout with 3 columns for editors
-- **Desktop (>1024px)** - Full 3-column editor + preview layout
-- **Ultra-wide (>1440px)** - Centered max-width container
-
-## 🛠️ Tech Stack
-
-- **HTML5** - Semantic markup with accessibility features
-- **CSS3** - Grid, Flexbox, CSS Variables for theming
-- **Vanilla JavaScript (ES6+)** - No frameworks or libraries
-- **Google Fonts** - Inter & JetBrains Mono
-
-**No build tools required. No dependencies. Just pure code.**
-
-## 🚀 Setup
-
-### Installation
-
-No installation needed! Simply open the `index.html` file in any modern web browser.
-
-```bash
-# Clone or download the repository
-cd online-code-editor
-
-# Open in browser
-# Windows
-start index.html
-
-# macOS
-open index.html
-
-# Linux
-xdg-open index.html
-```
-
-### File Structure
-
-```
-/online-code-editor
- ├── index.html          # Main HTML structure
- ├── style.css           # Complete styling with themes
- ├── script.js           # All JavaScript functionality
- ├── DEPLOYMENT.md       # Deployment guide
- └── README.md           # This file
-```
-
-### Browser Compatibility
-
-- ✅ Chrome (latest)
-- ✅ Firefox (latest)
-- ✅ Safari (latest)
-- ✅ Edge (latest)
-
-## 📝 Usage
-
-1. **Write Code** - Type HTML, CSS, and JavaScript in respective editors
-2. **See Results** - Preview updates automatically after 500ms
-3. **Manual Run** - Click "Run" button or press `Ctrl+Enter`
-4. **Save Work** - Click "Save" or press `Ctrl+S`
-5. **Toggle Theme** - Click theme toggle button
-6. **Reset** - Click "Reset" to clear all editors
-
-### Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+Enter` / `Cmd+Enter` | Run code |
-| `Ctrl+S` / `Cmd+S` | Save code |
-| `Tab` | Insert 2 spaces |
-
-## 🌐 Deployment
-
-The application can be deployed to any static hosting platform:
-
-- **GitHub Pages** - Free hosting with custom domain support
-- **Netlify** - Drag & drop deployment
-- **Vercel** - Fast CDN with preview deployments
-- **Traditional Hosting** - Upload via FTP/SFTP
-
-See `DEPLOYMENT.md` for detailed deployment instructions.
-
-## 🎨 Customization
-
-### Changing Colors
-
-Edit CSS variables in `style.css`:
-
-```css
-:root {
-    --accent-primary: #6366f1;    /* Primary color */
-    --accent-secondary: #8b5cf6;  /* Secondary color */
-}
-```
-
-### Adjusting Debounce Delay
-
-In `script.js`, modify the timeout:
-
-```javascript
-state.debounceTimer = setTimeout(() => {
-    updatePreview();
-}, 500); // Change to your preferred delay (ms)
-```
-
-## 📄 License
-
-MIT License - Free to use for personal or commercial purposes.
-
-## 👨‍💻 Created By
-
-**Kishan**
-
-Built with ❤️ using modern web standards.
+[![Version](https://img.shields.io/badge/version-2.0.0-blueviolet.svg?style=for-the-badge)](https://github.com/KISHAN652/online-code-editor)
+[![PWA](https://img.shields.io/badge/PWA-Supported-success.svg?style=for-the-badge)](#-progressive-web-app-pwa)
+[![License](https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge)](LICENSE)
 
 ---
 
-**Enjoy coding with CodePlayground! 🚀**
+## 📖 About CodePlayground IDE
+
+**CodePlayground v2.0** is an interactive browser-based development workbench designed for rapid prototyping, visual coding, and front-end learning. It moves far beyond standard online compilers by embedding advanced developer tools directly into a cohesive, glassmorphic client-side interface. 
+
+With zero backend dependencies, the entire environment operates fully in the browser—meaning maximum security, extreme speed, and complete offline capability.
+
+---
+
+## 💎 Features Blueprint
+
+```mermaid
+graph TD
+    A[CodePlayground v2.0] --> B[Visual Toolbox Drawer]
+    A --> C[Smarter Multi-Pane Workspace]
+    A --> D[Interactive Console Drawer]
+    A --> E[Project Helpers & PWA]
+
+    B --> B1[Visual CSS Sliders]
+    B --> B2[UI Components Library]
+    B --> B3[Color Palette Explorer]
+    
+    C --> C1[HTML, CSS, JS, Markdown editors]
+    C --> C2[Active Linter indicators]
+    C --> C3[Prettier Dynamic Formatting]
+    C --> C4[Zen Fullscreen Mode]
+
+    D --> D1[Sandboxed logs capture]
+    D --> D2[Interactive JS REPL CLI]
+
+    E --> E1[Service Worker Offline Caching]
+    E --> E2[Compressed URL Share Links]
+    E --> E3[Local backups Version History]
+    E --> E4[Multi-File ZIP Exports]
+```
+
+---
+
+## ✨ Features Breakdown
+
+### 1. Collapsible Visual Sidebar Drawer
+* **Visual CSS Sliders**: Real-time graphical range calculators for **Box Shadows**, **Border Radius**, and **Linear Gradients**. Design visually and click to inject the resulting CSS code instantly at your active cursor.
+* **Component Library Tab**: Click to inject pre-coded, highly polished visual elements (Glassmorphic buttons, glowing inputs, neon cards, skeletal loader wrappers, iOS-style toggle sliders) directly into your active workspace.
+* **Curated HSL Color Palettes**: Explore trending design palettes (Cyberpunk glow, pastel dreams, sunset breeze) and inject HEX color codes into your style sheets with a single click.
+* **Cheat Sheets Tab**: Rapid reference syntax guides for CSS Flexbox, Grid, semantic HTML5 tags, and essential ES6 array helpers.
+
+### 2. Smart Multi-Pane Workspace
+* **Four Editor Columns**: Dedicated panels for **HTML5**, **CSS3**, **ES6 JavaScript**, and **README Markdown** (which compiles and renders notes dynamically in the preview shell).
+* **Smart Caret Autoclose**: Automates matching brackets (`()`, `{}`, `[]`) and quotes (`""`, `''`, `<>`) closures with precise caret alignment.
+* **Prettier Formatting integration**: Asynchronously fetches Prettier standalone parsers via CDN to clean and format active scripts on demand.
+* **Real-time Code Linters**: Client-side warnings for unclosed tags, unclosed braces, or missing HTML `alt` image attributes. Shows pulsing red notification dots on tabs.
+* **Zen Focus Mode**: Double-click any editor header to maximize it to full screen for distraction-free coding.
+* **Workspace layout Engine**: Switch between horizontal split (editor columns stacked above the viewport) and vertical split (side-by-side editors and viewport) smoothly.
+
+### 3. Sandboxed Live Preview & JS REPL Console
+* **Log Interceptor**: Catch and filter all logs, warnings, and errors dispatched inside the sandboxed iframe and display them inside a gorgeous logs drawer.
+* **Dynamic JS REPL Command Line**: Type active JavaScript expressions directly inside the console prompt and evaluate them inside the iframe sandbox context in real-time.
+* **Environment Mock Data helper**: Access `playground.mockData` directly inside your scripts to query high fidelity fake user objects, product lists, or Unsplash technology category imagery.
+
+### 4. Advanced Persistence, Sharing & Exports
+* **Offline PWA Engine**: Bundles an aggressive Service Worker (`sw.js`) and PWA `manifest.json`. You can install CodePlayground on your phone or desktop and write/test code 100% offline.
+* **Compressed URL Sharing**: Serializes and compresses your HTML, CSS, JS, and Markdown codes into a single URL-safe Base64 hash. Generate shareable links that open and restore your workspace instantly on any device without database roundtrips.
+* **Local backups version history**: Automatically saves code checkpoints inside `localStorage` every 5 minutes. Roll back to any of the last 10 versions anytime using the Backups drawer.
+* **Dynamic Library Manager**: Instantly inject popular libraries (Tailwind CSS, GSAP Animations, Font Awesome Icons, Animate.css, Bootstrap, jQuery) via dynamic script injection.
+* **Project ZIP Exports**: Pack and download your entire workspace as a standalone structured ZIP folder containing separate `index.html`, `style.css`, and `script.js` files using `JSZip`.
+
+---
+
+## 📂 Project Structure
+
+```
+/online-code-editor
+ ├── index.html          # Upgraded Visual IDE HTML framework
+ ├── style.css           # CURATED light/dark glassmorphic variables & animation styles
+ ├── script.js           # Visual calculators, REPL, linters, PWA and compression core
+ ├── sw.js               # Service Worker caching for offline capability
+ ├── manifest.json       # Progressive Web App configuration properties
+ └── README.md           # This project guide
+```
+
+---
+
+## 🚀 Setup & Installation
+
+CodePlayground is zero-install and works out-of-the-box. Simply open `index.html` in any modern web browser or clone the repository to run it locally:
+
+```bash
+# Clone the repository
+git clone https://github.com/KISHAN652/online-code-editor.git
+
+# Enter the workspace directory
+cd online-code-editor
+
+# Open in browser (Windows)
+start index.html
+
+# Open in browser (macOS)
+open index.html
+```
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Shortcut | Description |
+|----------|-------------|
+| `Ctrl + Enter` / `Cmd + Enter` | Run/Re-compile current playground codes |
+| `Ctrl + S` / `Cmd + S` | Force-lock active code changes into localStorage |
+| `Ctrl + \`` (Backtick) | Expand or collapse the console logs drawer |
+| `Tab` | Insert 2-space code indentation |
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. Feel free to customize and expand it as you see fit!
+
+---
+
+**Developed with ❤️ by Kishan. Build something awesome on CodePlayground! 🚀**
