@@ -1,210 +1,676 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Modern online code editor playground for HTML, CSS, and JavaScript with live preview">
-    <meta name="keywords" content="code editor, playground, HTML, CSS, JavaScript, live preview">
-    <meta name="author" content="CodePlayground">
+    <meta name="description" content="Ultra-premium online code playground and IDE for HTML, CSS, JavaScript, and Markdown with console REPL and visual utilities">
+    <meta name="keywords" content="code editor, playground, HTML, CSS, JavaScript, live preview, REPL, CSS generator, PWA, sandbox">
+    <meta name="theme-color" content="#0f172a">
     
-    <title>CodePlayground - Online Code Editor</title>
+    <title>CodePlayground - Ultimate Online IDE</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
     
     <!-- Preconnect to Google Fonts for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Prettier CDN standalone libraries for code formatting -->
+    <script src="https://unpkg.com/prettier@2.8.8/standalone.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.8/parser-html.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.8/parser-postcss.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.8/parser-babel.js"></script>
+    <script src="https://unpkg.com/prettier@2.8.8/parser-markdown.js"></script>
+
+    <!-- JSZip and FileSaver for ZIP project exports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <!-- Lucide Icons via unpkg -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Main Container -->
+    <!-- Main App Wrapper -->
     <div class="app-container">
         
-        <!-- Header / Toolbar -->
+        <!-- Premium Toolbar -->
         <header class="toolbar" role="banner">
             <div class="toolbar-left">
+                <button class="btn btn-secondary btn-icon" id="sidebarToggle" aria-label="Toggle visual utilities sidebar" title="Visual Toolbox">
+                    <i data-lucide="layout-sidebar"></i>
+                </button>
                 <h1 class="logo">
                     <span class="logo-icon">{ }</span>
                     <span class="logo-text">CodePlayground</span>
+                    <span class="logo-badge">IDE v2.0</span>
                 </h1>
             </div>
             
+            <div class="toolbar-center">
+                <!-- Editor Layout Actions -->
+                <div class="btn-group">
+                    <button class="btn btn-secondary active" id="layoutVerticalBtn" title="Vertical Split Screen">
+                        <i data-lucide="columns"></i>
+                    </button>
+                    <button class="btn btn-secondary" id="layoutHorizontalBtn" title="Horizontal Split Screen">
+                        <i data-lucide="rows"></i>
+                    </button>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="templatesBtn" title="Project Templates">
+                        <i data-lucide="sparkles"></i>
+                        <span class="btn-text">Templates</span>
+                        <i data-lucide="chevron-down" class="dropdown-chevron"></i>
+                    </button>
+                    <!-- Templates Dropdown Menu -->
+                    <div class="dropdown-menu" id="templatesDropdown">
+                        <button class="dropdown-item" data-template="welcome">Welcome Playground</button>
+                        <button class="dropdown-item" data-template="glass-card">Glassmorphic Card</button>
+                        <button class="dropdown-item" data-template="neumorphic-calc">Neumorphic Calculator</button>
+                        <button class="dropdown-item" data-template="particle-canvas">Particle Canvas</button>
+                        <button class="dropdown-item" data-template="gsap-hero">GSAP Animations Hero</button>
+                    </div>
+                </div>
+            </div>
+            
             <div class="toolbar-right">
-                <button class="btn btn-secondary" id="resetBtn" aria-label="Reset all editors" title="Reset All">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
-                        <path d="M21 3v5h-5"/>
-                        <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
-                        <path d="M3 21v-5h5"/>
-                    </svg>
-                    <span class="btn-text">Reset</span>
+                <button class="btn btn-secondary" id="formatBtn" title="Format Code (Prettier)">
+                    <i data-lucide="align-left"></i>
+                    <span class="btn-text">Format</span>
                 </button>
-                
-                <button class="btn btn-secondary" id="saveBtn" aria-label="Save code to local storage" title="Save Code">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    <span class="btn-text">Save</span>
+
+                <button class="btn btn-secondary" id="librariesBtn" title="Inject External Libraries (Tailwind CSS, GSAP...)">
+                    <i data-lucide="box"></i>
+                    <span class="btn-text">Libraries</span>
                 </button>
-                
-                <button class="btn btn-primary" id="runBtn" aria-label="Run code" title="Run Code (Ctrl+Enter)">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polygon points="5 3 19 12 5 21 5 3"/>
-                    </svg>
+
+                <button class="btn btn-secondary" id="historyBtn" title="Local Backups / Version History">
+                    <i data-lucide="history"></i>
+                </button>
+
+                <button class="btn btn-secondary" id="shareBtn" title="Generate Shareable Link with Compressed Code">
+                    <i data-lucide="share-2"></i>
+                    <span class="btn-text">Share</span>
+                </button>
+
+                <button class="btn btn-primary" id="runBtn" title="Run Code (Ctrl+Enter)">
+                    <i data-lucide="play"></i>
                     <span class="btn-text">Run</span>
                 </button>
                 
+                <button class="btn btn-secondary" id="exportBtn" title="Export Project as ZIP">
+                    <i data-lucide="download"></i>
+                    <span class="btn-text">Export</span>
+                </button>
+
+                <button class="btn btn-secondary btn-icon" id="settingsBtn" title="Playground Settings">
+                    <i data-lucide="settings"></i>
+                </button>
+
                 <button class="btn btn-icon theme-toggle" id="themeToggle" aria-label="Toggle theme" title="Toggle Theme">
-                    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="5"/>
-                        <line x1="12" y1="1" x2="12" y2="3"/>
-                        <line x1="12" y1="21" x2="12" y2="23"/>
-                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-                        <line x1="1" y1="12" x2="3" y2="12"/>
-                        <line x1="21" y1="12" x2="23" y2="12"/>
-                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-                    </svg>
-                    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-                    </svg>
+                    <i data-lucide="sun" class="sun-icon"></i>
+                    <i data-lucide="moon" class="moon-icon"></i>
                 </button>
             </div>
         </header>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
+        <!-- Main Body Workspace -->
+        <div class="workspace-wrapper">
             
-            <!-- Editors Container -->
-            <div class="editors-container" id="editorsContainer">
+            <!-- Collapsible Visual Sidebar Drawer -->
+            <aside class="sidebar-drawer collapsed" id="sidebarDrawer" aria-label="Visual design utilities">
+                <!-- Sidebar Tabs Navigation -->
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab-btn active" data-tab="css-gen" title="CSS Visual Generators">
+                        <i data-lucide="sliders"></i>
+                        <span>Generators</span>
+                    </button>
+                    <button class="sidebar-tab-btn" data-tab="comp-lib" title="Visual Component Library">
+                        <i data-lucide="component"></i>
+                        <span>Components</span>
+                    </button>
+                    <button class="sidebar-tab-btn" data-tab="color-pal" title="Modern Color Palettes">
+                        <i data-lucide="palette"></i>
+                        <span>Colors</span>
+                    </button>
+                    <button class="sidebar-tab-btn" data-tab="cheat-sheet" title="Quick Reference Guides">
+                        <i data-lucide="help-circle"></i>
+                        <span>Cheat Sheets</span>
+                    </button>
+                </div>
+
+                <!-- Sidebar Panes Context -->
+                <div class="sidebar-content">
+                    
+                    <!-- CSS Generator Pane -->
+                    <div class="sidebar-pane active" id="pane-css-gen">
+                        <h3>CSS Visual Generators</h3>
+                        
+                        <!-- Box Shadow Generator -->
+                        <div class="tool-section">
+                            <h4>Box Shadow Maker</h4>
+                            <div class="tool-preview-box" id="shadowBoxPreview">Preview</div>
+                            <div class="control-group">
+                                <label>Offset X: <span class="val" id="shadowXVal">10px</span></label>
+                                <input type="range" class="custom-slider" id="shadowX" min="-50" max="50" value="10">
+                            </div>
+                            <div class="control-group">
+                                <label>Offset Y: <span class="val" id="shadowYVal">10px</span></label>
+                                <input type="range" class="custom-slider" id="shadowY" min="-50" max="50" value="10">
+                            </div>
+                            <div class="control-group">
+                                <label>Blur Radius: <span class="val" id="shadowBlurVal">15px</span></label>
+                                <input type="range" class="custom-slider" id="shadowBlur" min="0" max="100" value="15">
+                            </div>
+                            <div class="control-group">
+                                <label>Spread Radius: <span class="val" id="shadowSpreadVal">0px</span></label>
+                                <input type="range" class="custom-slider" id="shadowSpread" min="-30" max="50" value="0">
+                            </div>
+                            <div class="control-group">
+                                <label>Shadow Color:</label>
+                                <input type="color" id="shadowColor" value="#000000">
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="insertShadowBtn">Insert Shadow CSS</button>
+                        </div>
+                        
+                        <!-- Border Radius Generator -->
+                        <div class="tool-section">
+                            <h4>Border Radius Maker</h4>
+                            <div class="tool-preview-box" id="radiusBoxPreview" style="background-color: var(--accent-primary);">Radius</div>
+                            <div class="control-group">
+                                <label>All Corners: <span class="val" id="radiusVal">12px</span></label>
+                                <input type="range" class="custom-slider" id="radiusAll" min="0" max="100" value="12">
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="insertRadiusBtn">Insert Border Radius CSS</button>
+                        </div>
+                        
+                        <!-- Linear Gradient Generator -->
+                        <div class="tool-section">
+                            <h4>Gradient Generator</h4>
+                            <div class="tool-preview-box" id="gradientPreview">Gradient</div>
+                            <div class="control-group">
+                                <label>Angle: <span class="val" id="gradAngleVal">135deg</span></label>
+                                <input type="range" class="custom-slider" id="gradAngle" min="0" max="360" value="135">
+                            </div>
+                            <div class="control-row">
+                                <div class="control-group half">
+                                    <label>Start Color:</label>
+                                    <input type="color" id="gradStartColor" value="#6366f1">
+                                </div>
+                                <div class="control-group half">
+                                    <label>End Color:</label>
+                                    <input type="color" id="gradEndColor" value="#8b5cf6">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="insertGradientBtn">Insert Gradient CSS</button>
+                        </div>
+                    </div>
+
+                    <!-- Component Library Pane -->
+                    <div class="sidebar-pane" id="pane-comp-lib">
+                        <h3>Visual Component Library</h3>
+                        <p class="section-desc">Click any pre-coded UI element below to inject it instantly into your workspace.</p>
+                        
+                        <div class="component-card" data-comp="glass-btn">
+                            <span class="comp-title">Glassmorphic Button</span>
+                            <span class="comp-desc">Sleek button with active backdrop blur and white border.</span>
+                        </div>
+                        <div class="component-card" data-comp="glow-input">
+                            <span class="comp-title">Glowing Accent Input</span>
+                            <span class="comp-desc">Text input with smooth violet focus glow outline animation.</span>
+                        </div>
+                        <div class="component-card" data-comp="neon-card">
+                            <span class="comp-title">Premium Glow Card</span>
+                            <span class="comp-desc">Hover card showcasing deep dynamic colorful shadows.</span>
+                        </div>
+                        <div class="component-card" data-comp="smooth-toggle">
+                            <span class="comp-title">Custom Smooth Toggle</span>
+                            <span class="comp-desc">Beautifully animated iOS-style toggle switch slider.</span>
+                        </div>
+                        <div class="component-card" data-comp="skeleton-loader">
+                            <span class="comp-title">Skeleton Shimmer Loader</span>
+                            <span class="comp-desc">Smooth loading card block placeholder animation.</span>
+                        </div>
+                    </div>
+
+                    <!-- Color Palettes Pane -->
+                    <div class="sidebar-pane" id="pane-color-pal">
+                        <h3>Trending Color Palettes</h3>
+                        <p class="section-desc">Click any color box below to inject its HEX code into your active stylesheet.</p>
+                        
+                        <div class="palette-section">
+                            <h4>Cyberpunk Glow</h4>
+                            <div class="palette-grid">
+                                <div class="color-swatch" style="background-color: #ff007f;" data-color="#ff007f" title="#ff007f"></div>
+                                <div class="color-swatch" style="background-color: #00f0ff;" data-color="#00f0ff" title="#00f0ff"></div>
+                                <div class="color-swatch" style="background-color: #7a00ff;" data-color="#7a00ff" title="#7a00ff"></div>
+                                <div class="color-swatch" style="background-color: #1a0033;" data-color="#1a0033" title="#1a0033"></div>
+                            </div>
+                        </div>
+
+                        <div class="palette-section">
+                            <h4>Pastel Dreams</h4>
+                            <div class="palette-grid">
+                                <div class="color-swatch" style="background-color: #ffc6ff;" data-color="#ffc6ff" title="#ffc6ff"></div>
+                                <div class="color-swatch" style="background-color: #bdb2ff;" data-color="#bdb2ff" title="#bdb2ff"></div>
+                                <div class="color-swatch" style="background-color: #a0c4ff;" data-color="#a0c4ff" title="#a0c4ff"></div>
+                                <div class="color-swatch" style="background-color: #caffbf;" data-color="#caffbf" title="#caffbf"></div>
+                            </div>
+                        </div>
+
+                        <div class="palette-section">
+                            <h4>Sunset Breeze</h4>
+                            <div class="palette-grid">
+                                <div class="color-swatch" style="background-color: #ff5964;" data-color="#ff5964" title="#ff5964"></div>
+                                <div class="color-swatch" style="background-color: #f7b05b;" data-color="#f7b05b" title="#f7b05b"></div>
+                                <div class="color-swatch" style="background-color: #ffe74c;" data-color="#ffe74c" title="#ffe74c"></div>
+                                <div class="color-swatch" style="background-color: #35a7ff;" data-color="#35a7ff" title="#35a7ff"></div>
+                            </div>
+                        </div>
+
+                        <div class="palette-section">
+                            <h4>Slate Elegance</h4>
+                            <div class="palette-grid">
+                                <div class="color-swatch" style="background-color: #0f172a;" data-color="#0f172a" title="#0f172a"></div>
+                                <div class="color-swatch" style="background-color: #3b82f6;" data-color="#3b82f6" title="#3b82f6"></div>
+                                <div class="color-swatch" style="background-color: #64748b;" data-color="#64748b" title="#64748b"></div>
+                                <div class="color-swatch" style="background-color: #f1f5f9;" data-color="#f1f5f9" title="#f1f5f9"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cheat Sheet Pane -->
+                    <div class="sidebar-pane" id="pane-cheat-sheet">
+                        <h3>Developer Cheat Sheets</h3>
+                        
+                        <div class="cheat-card">
+                            <h5>CSS Flexbox Layout</h5>
+                            <pre><code>display: flex;
+flex-direction: row | column;
+justify-content: center | space-between;
+align-items: center | stretch;
+flex-wrap: wrap;</code></pre>
+                        </div>
+                        
+                        <div class="cheat-card">
+                            <h5>CSS Grid Layout</h5>
+                            <pre><code>display: grid;
+grid-template-columns: repeat(3, 1fr);
+grid-gap: 16px;
+grid-template-areas: "h h h" "s m m";</code></pre>
+                        </div>
+
+                        <div class="cheat-card">
+                            <h5>HTML5 Semantics</h5>
+                            <pre><code>&lt;header&gt;&lt;/header&gt;
+&lt;main&gt;
+  &lt;aside&gt;&lt;/aside&gt;
+  &lt;section&gt;&lt;/section&gt;
+&lt;/main&gt;
+&lt;footer&gt;&lt;/footer&gt;</code></pre>
+                        </div>
+
+                        <div class="cheat-card">
+                            <h5>JS Array Helpers</h5>
+                            <pre><code>arr.map(x => x * 2);
+arr.filter(x => x.active);
+arr.reduce((acc, curr) => acc + curr, 0);
+arr.find(x => x.id === 1);</code></pre>
+                        </div>
+                    </div>
+                    
+                </div>
+            </aside>
+            
+            <!-- Main Content Splits -->
+            <main class="main-content layout-vertical" id="mainContent">
                 
-                <!-- HTML Editor Panel -->
-                <div class="editor-panel" data-language="html">
-                    <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
-                        <div class="panel-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="16 18 22 12 16 6"/>
-                                <polyline points="8 6 2 12 8 18"/>
-                            </svg>
-                            <span>HTML</span>
+                <!-- Editors Container -->
+                <div class="editors-container" id="editorsContainer">
+                    
+                    <!-- HTML Editor Panel -->
+                    <div class="editor-panel" data-language="html" id="panelHTML">
+                        <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
+                            <div class="panel-title">
+                                <i data-lucide="code-2" class="icon-html"></i>
+                                <span>HTML</span>
+                                <span class="lint-badge" id="htmlLintBadge" title="Lint Warnings Details"></span>
+                            </div>
+                            <div class="panel-actions">
+                                <button class="btn-panel-action zen-toggle" title="Maximize Editor">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                                <button class="collapse-btn" aria-label="Toggle HTML editor">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                            </div>
                         </div>
-                        <button class="collapse-btn" aria-label="Toggle HTML editor">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <div class="line-numbers" id="htmlLineNumbers" aria-hidden="true"></div>
+                                <textarea 
+                                    class="code-editor" 
+                                    id="htmlEditor" 
+                                    spellcheck="false"
+                                    aria-label="HTML code editor"
+                                    placeholder="<!-- Write your HTML here -->"
+                                ></textarea>
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-content">
-                        <div class="editor-wrapper">
-                            <div class="line-numbers" id="htmlLineNumbers" aria-hidden="true"></div>
-                            <textarea 
-                                class="code-editor" 
-                                id="htmlEditor" 
-                                spellcheck="false"
-                                aria-label="HTML code editor"
-                                placeholder="<!-- Write your HTML here -->"
-                            ></textarea>
+    
+                    <!-- CSS Editor Panel -->
+                    <div class="editor-panel" data-language="css" id="panelCSS">
+                        <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
+                            <div class="panel-title">
+                                <i data-lucide="layers" class="icon-css"></i>
+                                <span>CSS</span>
+                                <span class="lint-badge" id="cssLintBadge" title="Lint Warnings Details"></span>
+                            </div>
+                            <div class="panel-actions">
+                                <button class="btn-panel-action zen-toggle" title="Maximize Editor">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                                <button class="collapse-btn" aria-label="Toggle CSS editor">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <div class="line-numbers" id="cssLineNumbers" aria-hidden="true"></div>
+                                <textarea 
+                                    class="code-editor" 
+                                    id="cssEditor" 
+                                    spellcheck="false"
+                                    aria-label="CSS code editor"
+                                    placeholder="/* Write your CSS here */"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <!-- JavaScript Editor Panel -->
+                    <div class="editor-panel" data-language="js" id="panelJS">
+                        <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
+                            <div class="panel-title">
+                                <i data-lucide="terminal" class="icon-js"></i>
+                                <span>JavaScript</span>
+                            </div>
+                            <div class="panel-actions">
+                                <button class="btn-panel-action zen-toggle" title="Maximize Editor">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                                <button class="collapse-btn" aria-label="Toggle JavaScript editor">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <div class="line-numbers" id="jsLineNumbers" aria-hidden="true"></div>
+                                <textarea 
+                                    class="code-editor" 
+                                    id="jsEditor" 
+                                    spellcheck="false"
+                                    aria-label="JavaScript code editor"
+                                    placeholder="// Write your JavaScript here"
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- README Markdown Editor Panel -->
+                    <div class="editor-panel" data-language="md" id="panelMD">
+                        <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
+                            <div class="panel-title">
+                                <i data-lucide="file-text" class="icon-md"></i>
+                                <span>README (Markdown)</span>
+                            </div>
+                            <div class="panel-actions">
+                                <button class="btn-panel-action zen-toggle" title="Maximize Editor">
+                                    <i data-lucide="maximize-2"></i>
+                                </button>
+                                <button class="collapse-btn" aria-label="Toggle Markdown editor">
+                                    <i data-lucide="chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="panel-content">
+                            <div class="editor-wrapper">
+                                <div class="line-numbers" id="mdLineNumbers" aria-hidden="true"></div>
+                                <textarea 
+                                    class="code-editor" 
+                                    id="mdEditor" 
+                                    spellcheck="false"
+                                    aria-label="Markdown documentation editor"
+                                    placeholder="# Document your project here..."
+                                ></textarea>
+                            </div>
+                        </div>
+                    </div>
+    
+                </div>
+    
+                <!-- Preview & Console Container -->
+                <div class="preview-container">
+                    <div class="preview-header">
+                        <div class="preview-title">
+                            <i data-lucide="eye" class="icon-live"></i>
+                            <span>Live Preview</span>
+                        </div>
+                        <div class="preview-toolbar-actions">
+                            <button class="btn-preview-action" id="toggleConsoleDrawerBtn" title="Toggle Console Drawer (Ctrl+`)">
+                                <i data-lucide="terminal"></i>
+                                <span>Console</span>
+                                <span class="console-count-badge" id="consoleCount">0</span>
+                            </button>
+                            <button class="btn-preview-action" id="fullscreenPreviewBtn" title="Fullscreen Preview">
+                                <i data-lucide="expand"></i>
+                            </button>
+                        </div>
+                        <div class="preview-status" id="previewStatus">
+                            <span class="status-dot"></span>
+                            <span class="status-text">Ready</span>
+                        </div>
+                    </div>
+                    
+                    <div class="preview-viewport-wrapper">
+                        <!-- Preview Content Iframe -->
+                        <div class="preview-content">
+                            <iframe 
+                                id="preview" 
+                                sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"
+                                title="Code preview"
+                            ></iframe>
+                        </div>
+
+                        <!-- Expandable Console Drawer -->
+                        <div class="console-drawer collapsed" id="consoleDrawer">
+                            <div class="console-drawer-header">
+                                <div class="console-drawer-title">
+                                    <i data-lucide="terminal" style="color: var(--accent-secondary); width: 14px; height: 14px;"></i>
+                                    <span>Console Logs</span>
+                                </div>
+                                <div class="console-drawer-actions">
+                                    <button class="btn-console-action" id="clearConsoleBtn" title="Clear Console Logs">
+                                        <i data-lucide="trash-2"></i>
+                                        <span>Clear</span>
+                                    </button>
+                                    <button class="btn-console-action" id="closeConsoleBtn" title="Collapse Console">
+                                        <i data-lucide="chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- Logs output area -->
+                            <div class="console-drawer-logs" id="consoleLogs"></div>
+                            <!-- REPL input row -->
+                            <div class="console-drawer-repl">
+                                <span class="repl-prompt">&gt;</span>
+                                <input type="text" id="replInput" placeholder="Execute JavaScript inside live sandbox..." autocomplete="off" spellcheck="false">
+                            </div>
                         </div>
                     </div>
                 </div>
+    
+            </main>
+        </div>
 
-                <!-- CSS Editor Panel -->
-                <div class="editor-panel" data-language="css">
-                    <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
-                        <div class="panel-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-                                <path d="M2 17l10 5 10-5"/>
-                                <path d="M2 12l10 5 10-5"/>
-                            </svg>
-                            <span>CSS</span>
-                        </div>
-                        <button class="collapse-btn" aria-label="Toggle CSS editor">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
+        <!-- ============================================
+           MODALS & DIALOGS
+           ============================================ -->
+        
+        <!-- Settings Modal -->
+        <div class="modal" id="settingsModal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3>Playground Settings</h3>
+                    <button class="btn-modal-close" data-modal="settings"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <div class="setting-item">
+                        <label for="settingsFontSize">Editor Font Size: <span class="val" id="fontSizeVal">14px</span></label>
+                        <input type="range" class="custom-slider" id="settingsFontSize" min="12" max="24" value="14">
                     </div>
-                    <div class="panel-content">
-                        <div class="editor-wrapper">
-                            <div class="line-numbers" id="cssLineNumbers" aria-hidden="true"></div>
-                            <textarea 
-                                class="code-editor" 
-                                id="cssEditor" 
-                                spellcheck="false"
-                                aria-label="CSS code editor"
-                                placeholder="/* Write your CSS here */"
-                            ></textarea>
+                    <div class="setting-item checkbox">
+                        <input type="checkbox" id="settingsAutoUpdate" checked>
+                        <label for="settingsAutoUpdate">Auto-run preview on typing</label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="settingsDebounce">Auto-run delay: <span class="val" id="debounceVal">500ms</span></label>
+                        <input type="range" class="custom-slider" id="settingsDebounce" min="200" max="2000" step="100" value="500">
+                    </div>
+                    <div class="setting-item checkbox">
+                        <input type="checkbox" id="settingsLinter" checked>
+                        <label for="settingsLinter">Enable real-time HTML/CSS linter warnings</label>
+                    </div>
+                    <hr>
+                    <div class="shortcut-list">
+                        <h4>Keyboard Shortcuts</h4>
+                        <div class="shortcut-row">
+                            <span class="keys">Ctrl + Enter</span>
+                            <span class="action">Run Code</span>
+                        </div>
+                        <div class="shortcut-row">
+                            <span class="keys">Ctrl + S</span>
+                            <span class="action">Save Workspace</span>
+                        </div>
+                        <div class="shortcut-row">
+                            <span class="keys">Ctrl + `</span>
+                            <span class="action">Toggle Console Panel</span>
+                        </div>
+                        <div class="shortcut-row">
+                            <span class="keys">Tab</span>
+                            <span class="action">Insert 2 Spaces Indent</span>
                         </div>
                     </div>
                 </div>
-
-                <!-- JavaScript Editor Panel -->
-                <div class="editor-panel" data-language="js">
-                    <div class="panel-header" tabindex="0" role="button" aria-expanded="true">
-                        <div class="panel-title">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="4 17 10 11 4 5"/>
-                                <line x1="12" y1="19" x2="20" y2="19"/>
-                            </svg>
-                            <span>JavaScript</span>
-                        </div>
-                        <button class="collapse-btn" aria-label="Toggle JavaScript editor">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polyline points="6 9 12 15 18 9"/>
-                            </svg>
-                        </button>
-                    </div>
-                    <div class="panel-content">
-                        <div class="editor-wrapper">
-                            <div class="line-numbers" id="jsLineNumbers" aria-hidden="true"></div>
-                            <textarea 
-                                class="code-editor" 
-                                id="jsEditor" 
-                                spellcheck="false"
-                                aria-label="JavaScript code editor"
-                                placeholder="// Write your JavaScript here"
-                            ></textarea>
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-modal="settings">Close</button>
+                    <button class="btn btn-primary" id="saveSettingsBtn">Save Settings</button>
                 </div>
-
             </div>
+        </div>
 
-            <!-- Preview Container -->
-            <div class="preview-container">
-                <div class="preview-header">
-                    <div class="preview-title">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="3"/>
-                        </svg>
-                        <span>Live Preview</span>
+        <!-- Libraries Modal -->
+        <div class="modal" id="librariesModal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3>Inject External CSS & JS Libraries</h3>
+                    <button class="btn-modal-close" data-modal="libraries"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Inject standard style guides or JavaScript plugins directly into your preview shell dynamically.</p>
+                    
+                    <div class="library-grid">
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-tailwind" data-url="https://cdn.tailwindcss.com">
+                            <label for="lib-tailwind">
+                                <strong>Tailwind CSS</strong>
+                                <span>Modern Utility-first CSS Engine</span>
+                            </label>
+                        </div>
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-gsap" data-url="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js">
+                            <label for="lib-gsap">
+                                <strong>GSAP (GreenSock)</strong>
+                                <span>Professional High-performance Animations</span>
+                            </label>
+                        </div>
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-font-awesome" data-url="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+                            <label for="lib-font-awesome">
+                                <strong>Font Awesome v6</strong>
+                                <span>Complete scalable vectors & social brands icons</span>
+                            </label>
+                        </div>
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-animate-css" data-url="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+                            <label for="lib-animate-css">
+                                <strong>Animate.css</strong>
+                                <span>Sleek cross-browser CSS animation effects</span>
+                            </label>
+                        </div>
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-bootstrap" data-url="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+                            <label for="lib-bootstrap">
+                                <strong>Bootstrap CSS</strong>
+                                <span>Responsive mobile-first components stylesheet</span>
+                            </label>
+                        </div>
+                        <div class="library-item">
+                            <input type="checkbox" id="lib-jquery" data-url="https://code.jquery.com/jquery-3.7.1.min.js">
+                            <label for="lib-jquery">
+                                <strong>jQuery</strong>
+                                <span>Legacy JavaScript DOM operations wrapper</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="preview-status" id="previewStatus">
-                        <span class="status-dot"></span>
-                        <span class="status-text">Ready</span>
+                    
+                    <div class="custom-library-row">
+                        <label for="lib-custom-url">Inject Custom Resource URL:</label>
+                        <div class="custom-url-input-group">
+                            <input type="url" id="lib-custom-url" placeholder="https://cdn.example.com/library.js or .css">
+                            <button class="btn btn-secondary" id="addCustomLibBtn">Add</button>
+                        </div>
+                        <div class="custom-libs-list" id="customLibsList"></div>
                     </div>
                 </div>
-                <div class="preview-content">
-                    <iframe 
-                        id="preview" 
-                        sandbox="allow-scripts allow-modals allow-forms allow-popups allow-same-origin"
-                        title="Code preview"
-                    ></iframe>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-modal="libraries">Cancel</button>
+                    <button class="btn btn-primary" id="applyLibrariesBtn">Apply & Refresh</button>
                 </div>
             </div>
+        </div>
 
-        </main>
+        <!-- Version History Modal -->
+        <div class="modal" id="historyModal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h3>Version History & Backups</h3>
+                    <button class="btn-modal-close" data-modal="history"><i data-lucide="x"></i></button>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-desc">Restore code checkpoints automatically cached in local storage (max 10 versions stored).</p>
+                    <div class="history-list" id="historyList">
+                        <!-- History items generated here dynamically -->
+                        <div class="history-empty">No versions cached yet. Checkpoints are autosaved every 5 minutes during edits.</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" data-modal="history">Close</button>
+                </div>
+            </div>
+        </div>
 
         <!-- Toast Notification -->
         <div class="toast" id="toast" role="alert" aria-live="polite">
-            <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-            </svg>
+            <i class="toast-icon" data-lucide="check-circle-2"></i>
             <span class="toast-message"></span>
         </div>
 
