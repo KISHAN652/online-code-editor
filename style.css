@@ -675,6 +675,39 @@ input[type="color"]::-webkit-color-swatch {
     color: var(--text-secondary);
 }
 
+/* Light Theme Visual Sidebar Overrides */
+[data-theme="light"] .sidebar-drawer {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="light"] .sidebar-tabs {
+    background: rgba(241, 245, 249, 0.8);
+}
+
+[data-theme="light"] .tool-section {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="light"] .component-card {
+    background: rgba(0, 0, 0, 0.01);
+}
+
+[data-theme="light"] .component-card:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+[data-theme="light"] .cheat-card {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="light"] .cheat-card pre {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .cheat-card code {
+    color: var(--text-primary);
+}
+
 /* ============================================
    MAIN GRID WORKSPACE
    ============================================ */
